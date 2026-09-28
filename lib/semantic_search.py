@@ -192,19 +192,24 @@ def embed_documents(
     prepared_documents: list[dict[str, Any]],
     embedding_model: EmbeddingModel,
 ) -> list[dict[str, Any]]:
-    """
-    Embed each prepared document.
+    
+    # Embed each prepared document; Do not mutate the input documents.
+    embedded = []  # new list, so the input list is never modified
 
-    Requirements:
-    - Accept documents that already include a 'text' field.
-    - Call embedding_model.embed(document["text"]) once per document.
-    - Return a new list of document dictionaries.
-    - Add an 'embedding' field to each returned document.
-    - Preserve metadata needed for source traceability.
+    for document in prepared_documents:
+        # Can't embed a document that hasn't been prepared
+        if "text" not in document:
+            raise ValueError(f"Document {document.get('id', '<unknown>')} has no 'text' field.")
 
-    Do not mutate the input documents.
-    """
-    raise NotImplementedError("TODO: Embed each prepared document.")
+        # Copy so the original prepared document isn't changed
+        new_document = document.copy()
+
+        # One embed call per document; the vector is stored alongside the metadata
+        new_document["embedding"] = embedding_model.embed(document["text"])
+
+        embedded.append(new_document)
+
+    return embedded
 
 
 def rank_documents(
