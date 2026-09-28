@@ -1,18 +1,3 @@
-"""
-Semantic Search Lab Starter Code
-
-You will build a small semantic retrieval workflow that prepares documents,
-embeds documents, embeds a query, compares similarity scores, and returns
-ranked top-k results with source information.
-
-The test suite uses a deterministic fake embedding model so grading does not
-depend on Ollama, internet access, or a specific model output. Your code should
-work with any object that has an .embed(text) method returning a list of numbers.
-
-Optional: You can use OllamaEmbeddingModel locally to try your workflow with
-a real embedding model after your pytest tests pass.
-"""
-
 from __future__ import annotations
 
 from typing import Any, Protocol
