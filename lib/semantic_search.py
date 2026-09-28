@@ -152,7 +152,7 @@ def prepare_documents(raw_documents: list[dict[str, Any]]) -> list[dict[str, Any
         new_document = document.copy()
 
         # The tags list is still shared after .copy(), so give the new dict its own list
-        if "tags" in new_document:
+        if isinstance(new_document.get("tags"), list):
             new_document["tags"] = list(new_document["tags"])
 
         # Add the searchable text the embedding model will read
