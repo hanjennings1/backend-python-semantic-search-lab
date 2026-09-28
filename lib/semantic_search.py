@@ -279,7 +279,7 @@ def main() -> None:
     after implementing the required functions.
     """
     embedder = OllamaEmbeddingModel()
-    query = "Why does the mobile app say my token is expired?"
+    query = "How much is my monthly charge?"    # changed in testing
 
     results = semantic_search(
         query=query,
