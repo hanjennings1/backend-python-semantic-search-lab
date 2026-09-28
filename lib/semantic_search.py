@@ -259,20 +259,16 @@ def semantic_search(
     embedding_model: EmbeddingModel,
     top_k: int = 3,
 ) -> list[dict[str, Any]]:
-    """
-    Run the full semantic retrieval workflow.
+    # Run the full semantic retrieval workflow.
 
-    Required sequence:
-    1. Prepare documents.
-    2. Embed documents.
-    3. Embed the query.
-    4. Compute similarity scores.
-    5. Rank results.
-    6. Return top-k results with source metadata.
+    # 1. Validate documents and add searchable text
+    prepared = prepare_documents(raw_documents)
 
-    This function should orchestrate the smaller helper functions.
-    """
-    raise NotImplementedError("TODO: Run the full semantic search workflow.")
+    # 2. Turn each document's text into a vector
+    embedded = embed_documents(prepared, embedding_model)
+
+    # 3–6. Embed the query, score, sort, and keep the top_k matches
+    return rank_documents(query, embedded, embedding_model, top_k)
 
 
 def main() -> None:
