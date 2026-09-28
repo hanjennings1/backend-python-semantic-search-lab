@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Protocol
-import copy
 
 REQUIRED_DOCUMENT_FIELDS = ("id", "title", "category", "summary", "source")
 
