@@ -218,30 +218,39 @@ def rank_documents(
     embedding_model: EmbeddingModel,
     top_k: int = 3,
 ) -> list[dict[str, Any]]:
-    """
-    Rank embedded documents against a user query.
+    # Rank embedded documents against a user query.
 
-    Requirements:
-    - Validate that query is a non-empty string.
-    - Validate that top_k is a positive integer.
-    - Embed the query with embedding_model.embed(query).
-    - Compare the query embedding to every document embedding.
-    - Add a 'score' field to each returned result.
-    - Sort results by score from highest to lowest.
-    - Return only the top_k results.
-    - Preserve source metadata: id, title, category, summary, and source.
+    # Query must be real text, not empty or just spaces
+    if not isinstance(query, str) or not query.strip():
+        raise ValueError("Query must be a non-empty string.")
 
-    The returned result format should look like:
-        {
-            "id": "DOC-102",
-            "title": "Fixing Invalid API Authentication Tokens",
-            "category": "api",
-            "summary": "...",
-            "source": "platform-docs/api/authentication-tokens",
-            "score": 0.87
-        }
-    """
-    raise NotImplementedError("TODO: Rank documents by query similarity.")
+    # top_k must be a whole number of at least 1 (bool is excluded since True counts as int)
+    if not isinstance(top_k, int) or isinstance(top_k, bool) or top_k < 1:
+        raise ValueError("top_k must be a positive integer.")
+
+    # Embed the query once, with the same model used for the documents
+    query_embedding = embedding_model.embed(query)
+
+    results = []
+    for document in embedded_documents:
+        # Compare the query's direction to this document's direction
+        score = cosine_similarity(query_embedding, document["embedding"])
+
+        # Keep only user-facing metadata plus the score; drop text and embedding
+        results.append({
+            "id": document["id"],
+            "title": document["title"],
+            "category": document["category"],
+            "summary": document["summary"],
+            "source": document["source"],
+            "score": score,
+        })
+
+    # Highest score first
+    results.sort(key=lambda result: result["score"], reverse=True)
+
+    # Slicing never errors if top_k is larger than the list
+    return results[:top_k]
 
 
 def semantic_search(
