@@ -164,21 +164,28 @@ def prepare_documents(raw_documents: list[dict[str, Any]]) -> list[dict[str, Any
     return prepared
 
 
-
 def cosine_similarity(vector_a: list[float], vector_b: list[float]) -> float:
-    """
-    Compute cosine similarity between two vectors.
+    # === Compute cosine similarity between two vectors ===
+    # Vectors must be the same length to compare position by position
+    if len(vector_a) != len(vector_b):
+        raise ValueError("Vectors must have the same dimensions.")
 
-    Requirements:
-    - Return a float.
-    - Return 1.0 for identical non-zero vectors.
-    - Return 0.0 for orthogonal vectors.
-    - Return 0.0 if either vector has zero magnitude.
-    - Raise ValueError if the vectors have different dimensions.
+    dot_product = 0.0
+    sum_squares_a = 0.0
+    sum_squares_b = 0.0
 
-    Do not use numpy for this lab. Implement the math with basic Python.
-    """
-    raise NotImplementedError("TODO: Compute cosine similarity.")
+    # One pass through both lists, building all three totals at once
+    for i in range(len(vector_a)):
+        dot_product += vector_a[i] * vector_b[i]
+        sum_squares_a += vector_a[i] ** 2
+        sum_squares_b += vector_b[i] ** 2
+
+    # A zero vector has no direction, so return 0.0 instead of dividing by zero
+    if sum_squares_a == 0 or sum_squares_b == 0:
+        return 0.0
+
+    # ** 0.5 is a square root; one root of the product avoids rounding issues
+    return dot_product / (sum_squares_a * sum_squares_b) ** 0.5
 
 
 def embed_documents(
