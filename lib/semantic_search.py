@@ -110,21 +110,26 @@ class OllamaEmbeddingModel:
 
 
 def build_search_text(document: dict[str, Any]) -> str:
-    """
-    Build the text that should be sent to the embedding model for one document.
+    # Text that should be sent to the embedding model for one document:
+    # include title, category, summary, (and tags)
+    lines = []
 
-    Requirements:
-    - Include the document title.
-    - Include the document category.
-    - Include the document summary.
-    - Include tags when available.
-    - Return one clean, non-empty string.
+    for field in ("title", "category", "summary"):
+        value = str(document.get(field, "")).strip()
+        if value:
+            lines.append(f"{field.capitalize()}: {value}")
 
-    Why:
-    Embedding only the title may lose important meaning. Embedding title,
-    category, summary, and tags gives the model more context.
-    """
-    raise NotImplementedError("TODO: Build searchable text from document fields.")
+    # only include tags when availabe:
+    tags = document.get("tags") or []
+    if isinstance(tags, str):
+        tags = [tags]
+    clean_tags = [str(tag).strip() for tag in tags if str(tag).strip()]
+    if clean_tags:
+        lines.append(f"Tags: {', '.join(clean_tags)}")
+
+    # return one clean, non-empty string (this separates each part onto its own line)
+    return "\n".join(lines)
+
 
 
 def prepare_documents(raw_documents: list[dict[str, Any]]) -> list[dict[str, Any]]:
